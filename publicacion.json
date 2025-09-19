@@ -68,8 +68,8 @@
       "name": "Create a post",
       "credentials": {
         "linkedInOAuth2Api": {
-          "id": "MlrYAnWt0WtdctRX",
-          "name": "LinkedIn Joako"
+          "id": "Tu-id-aqui",
+          "name": "LinkedIn Account"
         }
       }
     },
@@ -158,7 +158,7 @@
       "name": "Select rows from a table1",
       "credentials": {
         "postgres": {
-          "id": "gdmg2EJCnkq4ePX0",
+          "id": "Tu-id-aqui",
           "name": "Postgres account"
         }
       }

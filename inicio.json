@@ -18,8 +18,8 @@
       "webhookId": "45a2f9b9-1c65-410e-a180-a343281e6766",
       "credentials": {
         "telegramApi": {
-          "id": "XQLidjtP4FBK7Em9",
-          "name": "Telegram Joako"
+          "id": "TELEGRAM_API_ID_HERE",
+          "name": "TTelegram Account"
         }
       }
     },
@@ -58,7 +58,7 @@
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "eY6yYeZBGhgQRkFc",
+          "id": "Tu-id-aqui",
           "name": "OpenAi account"
         }
       }
@@ -119,8 +119,8 @@
       "name": "Message a model",
       "credentials": {
         "perplexityApi": {
-          "id": "JstutsZQQOZdIMS8",
-          "name": "Perplexity account 2"
+          "id": "Tu-id-aqui",
+          "name": "Perplexity account"
         }
       }
     },
@@ -388,7 +388,7 @@
       "name": "Insert rows in a table1",
       "credentials": {
         "postgres": {
-          "id": "gdmg2EJCnkq4ePX0",
+          "id": "Tu-id-aqui",
           "name": "Postgres account"
         }
       }
@@ -423,8 +423,8 @@
       "webhookId": "8592b2f1-d8b8-440f-b4d6-05720de9fb37",
       "credentials": {
         "telegramApi": {
-          "id": "XQLidjtP4FBK7Em9",
-          "name": "Telegram Joako"
+          "id": "Tu-id-aqui",
+          "name": "Telegram Account"
         }
       }
     },
@@ -508,7 +508,7 @@
       "name": "Insert or update rows in a table",
       "credentials": {
         "postgres": {
-          "id": "gdmg2EJCnkq4ePX0",
+          "id": "Tu-id-aqui",
           "name": "Postgres account"
         }
       }
