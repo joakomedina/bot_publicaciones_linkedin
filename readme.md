@@ -13,7 +13,7 @@ El flujo completo permite:
 3. Mostrar un formulario web donde el usuario puede seleccionar los textos e imágenes que más le gusten.
 4. Crear la publicación final lista para LinkedIn.
 
-Está pensado para el sector **retail y lujo**, pero es fácilmente adaptable a otros sectores.
+Está pensado para una persona (que lo usa actualmente) dedicada al sector **retail y lujo**, pero es fácilmente adaptable a otros sectores.
 
 ---
 
