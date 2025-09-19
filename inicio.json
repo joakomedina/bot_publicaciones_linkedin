@@ -1,0 +1,672 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2128,
+        448
+      ],
+      "name": "Telegram Trigger",
+      "id": "ec899627-5edf-467b-8547-03b83d3092b5",
+      "webhookId": "45a2f9b9-1c65-410e-a180-a343281e6766",
+      "credentials": {
+        "telegramApi": {
+          "id": "XQLidjtP4FBK7Em9",
+          "name": "Telegram Joako"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Eres un analista experto en generación de contenido estratégico para LinkedIn, especializado en el sector de datos y automatización.\n\nRedacta una propuesta de contenido breve y clara (entre 150 y 250 palabras) en un tono profesional y enfocado a LinkedIn.\n\nDefine la palabra clave principal: debe ser única, representativa y con potencial de búsqueda.\n\nIncluye entre 5 y 10 palabras clave secundarias: términos relacionados, sinónimos o conceptos que complementen el posicionamiento.\n\nEspecifica la intención de búsqueda del usuario en una sola frase.\n\nDevuelve siempre la respuesta en el siguiente formato, sin texto adicional:\n\n---\n**Propuesta de contenido:**\n[texto]\n\n**Primary Keyword:**  \n[palabra clave principal]\n\n**Keywords:**  \n- [keyword 1]  \n- [keyword 2]  \n- [keyword 3]  \n...\n\n**Search Intent:**  \n[intención de búsqueda resumida en una frase]\n\n---\n\nTexto recibido:  \n**{{ $json.message.text }}**\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -1872,
+        448
+      ],
+      "id": "e170d53a-8844-4816-9d75-951222be8682",
+      "name": "AI Agent investigador"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1872,
+        704
+      ],
+      "id": "5fe2823e-e136-422e-aad1-afa71afd5e55",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "eY6yYeZBGhgQRkFc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Eres un editor profesional especializado en contenidos para LinkedIn, enfocado en perfiles de Data Analyst con orientación a Data Scientist.\n\nRecibirás un contenido de inspiración y un JSON con resultados de búsqueda (`search_results`) que incluye títulos.  \nTema recibido: **{{ $json.choices[0].message.content }}**  \nResultados de búsqueda: **{{ $json.search_results }}**\nPalabras clave principal: **{{ $('AI Agent investigador').item.json.output.primary_keyword }}**\nPalabras clave: **{{ $('AI Agent investigador').item.json.output.keywords }}**\nTu tarea es generar **3 posts listos para LinkedIn**, siguiendo estas reglas:\n\n1. Devuelve **únicamente un array con 3 objetos**, cada uno con las llaves:\n   - `\"numero\"`: \"1\", \"2\" o \"3\"\n   - `\"titulo\"`: usa los campos `title` de `search_results` para inspirarte\n   - `\"texto\"`: entre 800 y 1000 caracteres, claro, cercano, sofisticado y listo para publicar\n   - `\"hashtags\"`: un array con entre 3 y 5 hashtags, seleccionados únicamente de esta lista:  \n     #DataAnalytics #DataEngineering #PySpark #Databricks #PowerBI #SQL #ETL #MachineLearning #Python #n8n #microsoft fabric\n\n2. Cada post debe tener:\n   - Hook de 1-2 frases\n   - Contenido en 3-5 párrafos o bullets con consejos, experiencias o reflexiones basadas **exclusivamente** en el contenido recibido\n   - Cierre con CTA (una frase para invitar a reflexionar o comentar)\n\n3. Estilo LinkedIn datos:\n\n   - Preferiblemente distendido, elocuente y divertido.\n   - Técnico pero accesible (que entienda tu colega de marketing y también el ingeniero de ML)\n   - Narrativo y basado en casos reales (los datos como protagonistas de historias)\n   - Inspirador y motivador (mostrar cómo los datos transforman negocios y carreras)\n   - Conciso y estructurado (menos “data lakes infinitos”, más “insights claros”)\n   - Visual y práctico (ejemplos con dashboards, gráficas, automatizaciones)\n   - Siempre agrega un toque humorístico inteligente para humanizar ejemplos: \n      “los datos también se equivocan los lunes”, \n      “Los datos no mienten… pero a veces hacen ghosting si no sabes dónde buscarlos.”\n      “Un buen dashboard debería enamorar a primera vista. Si tienes que explicarlo demasiado… es un Excel disfrazado.”\n      “El dato es como el café: si está mal preparado, te arruina el día.”\n      “Data Science es el único lugar donde los clusters son bienvenidos sin mascarilla.”\n      “La nube no pesa nada, pero sostener tus datos ahí puede ser muy pesado si no tienes estrategia.”\n      “En datos, el ruido no molesta a los vecinos… pero sí a tu modelo de Machine Learning.”\n      “Un dato sin contexto es como un gráfico circular en blanco y negro: técnicamente correcto, pero tristemente incompleto.”\n      “Los pipelines de datos son como las dietas: todos prometen ser sencillos… hasta que los empiezas.”\n      “El dato es el nuevo petróleo… pero con menos CO₂ y más Excel rotos.”\n      “Machine Learning suena futurista, hasta que te das cuenta de que solo predice que siempre llegas tarde a las reuniones.”)\n\n4. No hagas preguntas, no incluyas emojis, íconos ni comentarios adicionales.  \n5. **Devuelve solo el array JSON**, sin texto adicional fuera de la estructura.\n\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "="
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -1312,
+        448
+      ],
+      "id": "2d6dbb2e-78bc-4bd2-ae73-daad785a81f0",
+      "name": "AI Writer Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "[\n  {\n    \"numero\": \"1\",\n    \"titulo\": \"Ejemplo de título inspirado en search_results\",\n    \"texto\": \"Ejemplo de texto de 800-1000 caracteres...\",\n    \"hashtags\": [\n      \"#DataAnalytics\",\n      \"#DataEngineering\",\n      \"#PySpark\",\n      \"#Databricks\",\n      \"#PowerBI\",\n      \"#SQL\",\n      \"#ETL\",\n      \"#MachineLearning\",\n      \"#Python\",\n      \"#n8n\",\n      \"#MicrosoftFabric\",\n      \"#BigData\",\n      \"#AI\"\n    ]\n  },\n  {\n    \"numero\": \"2\",\n    \"titulo\": \"Otro título de ejemplo\",\n    \"texto\": \"Otro texto dentro del rango requerido...\",\n    \"hashtags\": [\n      \"#DataAnalytics\",\n      \"#DataEngineering\",\n      \"#PySpark\",\n      \"#Databricks\",\n      \"#PowerBI\",\n      \"#SQL\",\n      \"#ETL\",\n      \"#MachineLearning\",\n      \"#Python\",\n      \"#n8n\",\n      \"#MicrosoftFabric\",\n      \"#BigData\",\n      \"#AI\"\n    ]\n  },\n  {\n    \"numero\": \"3\",\n    \"titulo\": \"Tercer título de ejemplo\",\n    \"texto\": \"Texto largo dentro de los 800-1200 caracteres...\",\n    \"hashtags\": [\n      \"#DataAnalytics\",\n      \"#DataEngineering\",\n      \"#PySpark\",\n      \"#Databricks\",\n      \"#PowerBI\",\n      \"#SQL\",\n      \"#ETL\",\n      \"#MachineLearning\",\n      \"#Python\",\n      \"#n8n\",\n      \"#MicrosoftFabric\",\n      \"#BigData\",\n      \"#AI\"\n    ]\n  }\n]\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1168,
+        688
+      ],
+      "id": "104b3efb-18de-4cfa-bfa2-08089ece02a0",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": "sonar",
+        "messages": {
+          "message": [
+            {
+              "content": "={\n  \"model\": \"sonar-pro\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert researcher and content strategist for LinkedIn posts in the data and automation sector. Your role is to find credible and up-to-date insights, statistics, examples, and references that enrich the content, aligned with the title, keywords, and intended audience. Do not generate original content, only research-based facts and visual ideas suitable for LinkedIn.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {\n        \"title\": \"Cómo un Analista de Datos Puede Iniciar Proyectos de Automatización Sin Ser Experto\",\n        \"content\": \"En el mundo actual, la automatización se presenta como una oportunidad accesible incluso para quienes no son expertos en la materia...\",\n        \"primary_keyword\": \"automatización para analistas de datos\",\n        \"keywords\": [\"automatización sin experiencia\",\"proyectos de automatización\",\"bots para LinkedIn\",\"n8n\",\"automatización low-code\",\"analista de datos\",\"publicación automatizada\",\"automatización para no expertos\",\"optimización de procesos\"],\n        \"search_intent\": \"Encontrar formas accesibles para que analistas de datos sin experiencia comiencen proyectos de automatización exitosos.\"\n      }\n    }\n  ],\n  \"options\": {\n    \"returnImages\": true,\n    \"minImages\": 6,\n    \"imageFocus\": [\"data workflow\", \"automation\", \"low-code tools\", \"LinkedIn post\"]\n  }\n}\n"
+            }
+          ]
+        },
+        "options": {
+          "returnImages": true
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        -1520,
+        448
+      ],
+      "id": "fb5a1d48-7635-4d63-b606-71f4f6641178",
+      "name": "Message a model",
+      "credentials": {
+        "perplexityApi": {
+          "id": "JstutsZQQOZdIMS8",
+          "name": "Perplexity account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"title\": \"Estrategias de automatización de datos en LinkedIn\",\n  \"content\": \"La automatización de procesos de datos ya no es opcional; es un diferenciador clave para las empresas que buscan eficiencia y escalabilidad. Integrar pipelines de ETL robustos, análisis predictivo y herramientas como Python, PySpark y Power BI permite a los equipos transformar datos en decisiones estratégicas con rapidez y precisión. Además, la implementación de flujos automatizados optimiza la productividad del equipo, reduce errores humanos y facilita la gobernanza de los datos, asegurando que la información crítica esté disponible en el momento justo. Los profesionales de datos que dominan estas técnicas se posicionan como líderes en innovación y contribuyen directamente al éxito de sus organizaciones, generando insights accionables y promoviendo una cultura de decisiones basadas en datos.\",\n  \"primary_keyword\": \"automatización de datos\",\n  \"keywords\": [\n    \"ETL\",\n    \"Power BI\",\n    \"Python\",\n    \"PySpark\",\n    \"análisis predictivo\",\n    \"flujos de trabajo de datos\",\n    \"inteligencia de negocio\",\n    \"productividad en datos\",\n    \"gobernanza de datos\"\n  ],\n  \"search_intent\": \"Informativa y educativa: el usuario busca entender cómo la automatización de datos optimiza procesos y mejora la toma de decisiones en entornos empresariales.\"\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1632,
+        720
+      ],
+      "id": "c35279c3-5796-49fc-86e2-7b5b934630aa",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Tomar todos los items de entrada\nconst items = $input.all();\n\n// Solo necesitamos el primer item si es uno solo\nconst item = items[0].json;\n\n// Crear un array con los posts\nconst posts = [];\n\nfor (let i = 1; i <= 3; i++) {\n    if (item[`numero_${i}`]) {\n        posts.push({\n            json: {\n                numero: item[`numero_${i}`],\n                titulo: item[`titulo_${i}`],\n                texto: item[`texto_${i}`],\n                hashtags: item[`hashtags_${i}`] || \"\"\n            }\n        });\n    }\n}\n\nreturn posts;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -416,
+        448
+      ],
+      "id": "00d824a8-6a9f-452a-afcf-1325c24471c9",
+      "name": "Code_Texto"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  { json: { id: 4, imagen_url: $('Message a model').first().json.images[0].image_url } },\n  { json: { id: 5, imagen_url: $('Message a model').first().json.images[1].image_url } },\n  { json: { id: 6, imagen_url: $('Message a model').first().json.images[2].image_url } }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -992,
+        448
+      ],
+      "id": "c73fce68-a76b-453e-8e8d-f308b1d06497",
+      "name": "CodeImagen"
+    },
+    {
+      "parameters": {
+        "jsCode": "const textos = $items(\"Code_Texto\");\nconst imagenes = $items(\"CodeImagen\");\n\nlet html = `\n<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Formulario</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      font-family: 'Segoe UI', sans-serif;\n      background-color: #f4f4f4;\n    }\n    .container {\n      max-width: 700px;\n      margin: 20px auto;\n      padding: 30px;\n      background-color: #fff;\n      border-radius: 10px;\n      box-shadow: 0 0 15px rgba(0,0,0,0.1);\n    }\n    h1 {\n      text-align: center;\n      margin-bottom: 30px;\n      color: #333;\n      font-size: 1.8em;\n    }\n    form {\n      display: flex;\n      flex-direction: column;\n      gap: 20px;\n    }\n    label {\n      display: block;\n      margin-bottom: 10px;\n      font-size: 16px;\n      color: #333;\n    }\n    input[type=\"checkbox\"] {\n      margin-right: 10px;\n    }\n    .images {\n      display: flex;\n      flex-direction: column;\n      gap: 20px;\n      align-items: center;\n    }\n    .images img {\n      width: 300px;\n      max-width: 100%;\n      height: auto;\n      border-radius: 8px;\n      box-shadow: 0 0 8px rgba(0,0,0,0.1);\n    }\n    button {\n      padding: 10px 20px;\n      font-size: 16px;\n      background-color: #0078D4;\n      color: white;\n      border: none;\n      border-radius: 5px;\n      cursor: pointer;\n      align-self: center;\n    }\n    button:hover {\n      background-color: #005fa3;\n    }\n\n    /* Responsive para móviles */\n    @media (max-width: 600px) {\n      .container {\n        padding: 15px;\n      }\n      h1 {\n        font-size: 1.5em;\n      }\n      label {\n        font-size: 14px;\n      }\n      .images {\n        gap: 15px;\n      }\n      .images img {\n        width: 100%;\n      }\n    }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <h1>Selecciona opciones</h1>\n    <form action=\"https://automac.botflow.top/webhook/resp-form\" method=\"POST\">\n`;\n\nlet indexTexto = 1;\nfor (const t of textos) {\n  html += `\n      <label>\n        <input type=\"checkbox\" name=\"opcion[]\" value=\"${indexTexto}\">\n        ${t.json.texto}\n      </label>\n  `;\n  indexTexto++;\n}\n\nfor (const img of imagenes) {\n  html += `\n      <div class=\"images\">\n        <img src=\"${img.json.imagen_url}\" alt=\"Imagen\">\n        <label>\n          <input type=\"checkbox\" name=\"imagen[]\" value=\"${img.json.id}\">\n          Seleccionar imagen\n        </label>\n      </div>\n  `;\n}\n\nhtml += `\n      <button type=\"submit\">Enviar</button>\n    </form>\n  </div>\n</body>\n</html>\n`;\n\nreturn [{\n  json: {\n    nombre: \"FormularioPrincipal\",\n    contenido_html: html\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -256,
+        448
+      ],
+      "id": "5a3cb21a-1b36-492c-be9a-7cb2e0db5ff6",
+      "name": "CrearFormularioHtml"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "publicaciones_joako",
+          "mode": "list",
+          "cachedResultName": "publicaciones_joako"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "numero_2": "={{ $items('Output1Items')[0].json.numero_2 }}",
+            "numero_3": "={{ $items('Output1Items')[0].json.numero_3 }}",
+            "numero_1": "={{ $items('Output1Items')[0].json.numero_1 }}",
+            "titulo_1": "={{ $items('Output1Items')[0].json.titulo_1 }}",
+            "texto_1": "={{ $items('Output1Items')[0].json.texto_1 }}",
+            "hashtags_1": "={{ $items('Output1Items')[0].json.hashtags_1 }}",
+            "titulo_2": "={{ $json.titulo_2 }}",
+            "texto_2": "={{ $items('Output1Items')[0].json.texto_2 }}",
+            "hashtags_2": "={{ $items('Output1Items')[0].json.hashtags_2 }}",
+            "titulo_3": "={{ $items('Output1Items')[0].json.titulo_3 }}",
+            "texto_3": "={{ $items('Output1Items')[0].json.texto_3 }}",
+            "hashtags_3": "={{ $items('Output1Items')[0].json.hashtags_3 }}",
+            "imagen_1": "={{ $items('CodeImagen')[0].json.imagen_url }}",
+            "imagen_2": "={{ $items('CodeImagen')[1].json.imagen_url }}",
+            "imagen_3": "={{ $items('CodeImagen')[2].json.imagen_url }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "numero_1",
+              "displayName": "numero_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "titulo_1",
+              "displayName": "titulo_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "texto_1",
+              "displayName": "texto_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "hashtags_1",
+              "displayName": "hashtags_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "imagen_1",
+              "displayName": "imagen_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "numero_2",
+              "displayName": "numero_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "titulo_2",
+              "displayName": "titulo_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "texto_2",
+              "displayName": "texto_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "hashtags_2",
+              "displayName": "hashtags_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "imagen_2",
+              "displayName": "imagen_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "numero_3",
+              "displayName": "numero_3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "titulo_3",
+              "displayName": "titulo_3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "texto_3",
+              "displayName": "texto_3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "hashtags_3",
+              "displayName": "hashtags_3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "imagen_3",
+              "displayName": "imagen_3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -592,
+        448
+      ],
+      "id": "de934ba7-c6d1-412f-aa97-e6ea3eae58cb",
+      "name": "Insert rows in a table1",
+      "credentials": {
+        "postgres": {
+          "id": "gdmg2EJCnkq4ePX0",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $items(\"AI Writer Agent\");\nconst posts = items[0].json.output;\n\nfunction ensureArray(value) {\n  if (!value) return [];\n  if (Array.isArray(value)) return value;\n  if (typeof value === 'string') {\n    return value\n      .replace(/[\\n\\r]+/g, ' ')  // quitar saltos de línea\n      .split(/[\\s,]+/)            // separar por espacios o comas\n      .map(s => s.trim())\n      .filter(Boolean);\n  }\n  return [];\n}\n\nreturn [{\n  json: {\n    numero_1: posts[0]?.numero || '',\n    titulo_1: posts[0]?.titulo || '',\n    texto_1: posts[0]?.texto || '',\n    hashtags_1: ensureArray(posts[0]?.hashtags),\n\n    numero_2: posts[1]?.numero || '',\n    titulo_2: posts[1]?.titulo || '',\n    texto_2: posts[1]?.texto || '',\n    hashtags_2: ensureArray(posts[1]?.hashtags),\n\n    numero_3: posts[2]?.numero || '',\n    titulo_3: posts[2]?.titulo || '',\n    texto_3: posts[2]?.texto || '',\n    hashtags_3: ensureArray(posts[2]?.hashtags)\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -768,
+        448
+      ],
+      "id": "ba614384-bad6-45d7-be63-3b7316b2ba11",
+      "name": "Output1Items"
+    },
+    {
+      "parameters": {
+        "chatId": "5229094860",
+        "text": "Abre el formulario y elige el contenido que quieres publicar: \nhttps://automac.botflow.top/webhook/form-joako\n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        112,
+        448
+      ],
+      "id": "aa2a3969-91f4-4db4-8255-17224f09f2bb",
+      "name": "Send a text message",
+      "webhookId": "8592b2f1-d8b8-440f-b4d6-05720de9fb37",
+      "credentials": {
+        "telegramApi": {
+          "id": "XQLidjtP4FBK7Em9",
+          "name": "Telegram Joako"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "formularios_joako",
+          "mode": "list",
+          "cachedResultName": "formularios_joako"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nombre": "={{ $json.nombre }}",
+            "contenido_html": "={{ $json.contenido_html }}"
+          },
+          "matchingColumns": [
+            "nombre"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "contenido_html",
+              "displayName": "contenido_html",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "fecha_creacion",
+              "displayName": "fecha_creacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -64,
+        448
+      ],
+      "id": "1953976a-e599-464b-9759-cc0eb6cbc8f6",
+      "name": "Insert or update rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "gdmg2EJCnkq4ePX0",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent investigador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent investigador": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent investigador",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Writer Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Writer Agent": {
+      "main": [
+        [
+          {
+            "node": "CodeImagen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Writer Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "AI Writer Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent investigador",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code_Texto": {
+      "main": [
+        [
+          {
+            "node": "CrearFormularioHtml",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CodeImagen": {
+      "main": [
+        [
+          {
+            "node": "Output1Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrearFormularioHtml": {
+      "main": [
+        [
+          {
+            "node": "Insert or update rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert rows in a table1": {
+      "main": [
+        [
+          {
+            "node": "Code_Texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Output1Items": {
+      "main": [
+        [
+          {
+            "node": "Insert rows in a table1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert or update rows in a table": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "26dc0e3a3d4c8cfca6496d8b64a53fffa1299778381fce72f04d0bb53077cbd5"
+  }
+}

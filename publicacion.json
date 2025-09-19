@@ -1,0 +1,279 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "# Creamos el HTML de respuesta\nhtml = \"\"\"\n<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n<meta charset=\"UTF-8\">\n<title>Gracias</title>\n<style>\n  body { font-family: 'Segoe UI', sans-serif; background-color: #f4f4f4; text-align: center; padding: 50px; }\n  .container { background-color: #fff; display: inline-block; padding: 30px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }\n  h1 { color: #0078D4; }\n  p { font-size: 18px; color: #333; }\n</style>\n</head>\n<body>\n  <div class=\"container\">\n    <h1>¡Gracias!</h1>\n    <p>Tu publicación va en camino.</p>\n  </div>\n</body>\n</html>\n\"\"\"\n\n# Devolvemos el HTML en el formato que n8n espera\nitems = [\n    {\n        \"json\": {\n          \"body\": html\n        }\n          # clave body contiene el HTML\n    }\n]\n\nreturn items\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -848,
+        144
+      ],
+      "id": "07a09d13-c6cb-438e-9d39-43cf536a9b87",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json[\"body\"] }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -592,
+        144
+      ],
+      "id": "8fad14a2-e084-4eb7-a9e8-718a841f0e55",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Tomamos el body del primer item del nodo Webhook\nconst body = $items(\"Webhook Formulario\")[0].json.body;\n\n// Validamos\nif (!body || !body[\"opcion[]\"] || !body[\"imagen[]\"]) {\n  throw new Error(\"Faltan datos en el body del webhook\");\n}\n\n// Creamos el combo\nreturn [\n  {\n    json: {\n      combo: body[\"opcion[]\"] + \":\" + body[\"imagen[]\"]\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -544,
+        -96
+      ],
+      "id": "7d929fc8-baa1-46dc-8ee8-750e033da8b8",
+      "name": "AgruparRespuesta"
+    },
+    {
+      "parameters": {
+        "person": "yex3X0IdFu",
+        "text": "={{ $('Crear el texto del post').item.json.titulo }}",
+        "shareMediaCategory": "IMAGE",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        592,
+        16
+      ],
+      "id": "ce63c959-357f-4a7a-be30-4839518de9a7",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "MlrYAnWt0WtdctRX",
+          "name": "LinkedIn Joako"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const combo = $items(\"AgruparRespuesta\")[0]?.json?.combo;\nif (!combo) throw new Error(\"Combo no definido\");\n\nconst [numTexto, numImagenForm] = combo.split(\":\");\n\nconst registro = $items(\"Select rows from a table1\")[0]?.json;\nif (!registro) throw new Error(\"Registro no disponible\");\n\n// Construimos los nombres de las columnas según convención para el texto\nconst tituloKey = `titulo_${numTexto}`;\nconst textoKey = `texto_${numTexto}`;\nconst hashtagsKey = `hashtags_${numTexto}`;\n\n// Mapeo explícito de los IDs del formulario a los nombres de columna\nconst imagenMap = {\n  \"4\": \"imagen_1\",\n  \"5\": \"imagen_2\",\n  \"6\": \"imagen_3\"\n};\n\nconst imagenKey = imagenMap[numImagenForm];\nif (!imagenKey) throw new Error(`No hay mapeo definido para la imagen ${numImagenForm}`);\n\n// Tomamos los valores\nconst titulo = registro[tituloKey];\nconst textoSeleccionado = registro[textoKey];\nconst hashtags = registro[hashtagsKey];\nconst imagenUrl = registro[imagenKey];\n\n// Validaciones\nif (!titulo) throw new Error(`No se encontró ${tituloKey}`);\nif (!textoSeleccionado) throw new Error(`No se encontró ${textoKey}`);\nif (!hashtags) throw new Error(`No se encontró ${hashtagsKey}`);\nif (!imagenUrl) throw new Error(`No se encontró ${imagenKey}`);\n\nreturn [\n  {\n    json: {\n      titulo,\n      texto: textoSeleccionado,\n      hashtags,\n      imagen_url: imagenUrl\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -128,
+        16
+      ],
+      "id": "9748f97b-78be-4df4-ab28-a64abe6bcb01",
+      "name": "SeleccionarTextoImagenBinaria"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "resp-form",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1120,
+        64
+      ],
+      "id": "1513ca5d-1f00-4f37-840e-78302914abc8",
+      "name": "Webhook Formulario",
+      "webhookId": "78e6162f-eb0b-4c25-a20b-127e8d58cc3a"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('SeleccionarTextoImagenBinaria').item.json.imagen_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        16
+      ],
+      "id": "8255d72f-1b2c-4a4a-beab-0c969f5b9214",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "publicaciones_joako",
+          "mode": "list",
+          "cachedResultName": "publicaciones_joako"
+        },
+        "limit": 1,
+        "sort": {
+          "values": [
+            {
+              "column": "id",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -320,
+        16
+      ],
+      "id": "135f5ede-9913-4876-af17-da6a297cc555",
+      "name": "Select rows from a table1",
+      "credentials": {
+        "postgres": {
+          "id": "gdmg2EJCnkq4ePX0",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d6e8fed7-9a61-4ecf-abdb-a2fa783caa06",
+              "name": "titulo",
+              "value": "={{ $json.titulo }}.\n\n{{ $json.texto }}\n{{ $json.hashtags }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        16
+      ],
+      "id": "dc420d11-6b81-4e60-984b-1e27fe8bcb60",
+      "name": "Crear el texto del post"
+    }
+  ],
+  "connections": {
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AgruparRespuesta": {
+      "main": [
+        [
+          {
+            "node": "Select rows from a table1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SeleccionarTextoImagenBinaria": {
+      "main": [
+        [
+          {
+            "node": "Crear el texto del post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Formulario": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AgruparRespuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select rows from a table1": {
+      "main": [
+        [
+          {
+            "node": "SeleccionarTextoImagenBinaria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear el texto del post": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "26dc0e3a3d4c8cfca6496d8b64a53fffa1299778381fce72f04d0bb53077cbd5"
+  }
+}
